@@ -14,6 +14,7 @@ const DETAILS: ClaudeBankedResetDetails = {
     {
       creditId: "grant_weekly_1",
       kind: "weekly",
+      title: "One weekly limit reset",
       availableCount: 1,
       expiresAt: "2026-12-20T00:00:00Z",
     },

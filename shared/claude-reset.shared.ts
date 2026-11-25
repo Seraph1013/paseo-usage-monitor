@@ -12,6 +12,8 @@ export const ClaudeBankedResetOptionSchema = z.object({
   /** The grant redeemed when this option is chosen. */
   creditId: z.string(),
   kind: ClaudeBankedResetKindSchema,
+  /** Claude's own wording, e.g. "One full limit reset (November 2026)". */
+  title: z.string().nullable(),
   availableCount: z.number().int().positive(),
   expiresAt: z.string().nullable(),
 });

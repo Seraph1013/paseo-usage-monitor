@@ -19,6 +19,7 @@ const WEEKLY_GRANT = {
   resets_left: 1,
   usable_now: true,
   ends_at: "2026-12-20T00:00:00Z",
+  label: "One weekly limit reset",
 };
 
 function createService(options: {
@@ -81,15 +82,22 @@ describe("Claude banked reset grants", () => {
       nowMs,
     );
     expect(options).toEqual([
-      { creditId: "grant_session", kind: "session", availableCount: 1, expiresAt: null },
+      {
+        creditId: "grant_session",
+        kind: "session",
+        title: null,
+        availableCount: 1,
+        expiresAt: null,
+      },
       {
         creditId: "grant_weekly_1",
         kind: "weekly",
+        title: "One weekly limit reset",
         availableCount: 3,
         expiresAt: "2026-12-20T00:00:00Z",
       },
-      { creditId: "grant_fable", kind: "fable", availableCount: 1, expiresAt: null },
-      { creditId: "grant_full", kind: "full", availableCount: 1, expiresAt: null },
+      { creditId: "grant_fable", kind: "fable", title: null, availableCount: 1, expiresAt: null },
+      { creditId: "grant_full", kind: "full", title: null, availableCount: 1, expiresAt: null },
     ]);
   });
 
@@ -133,6 +141,7 @@ describe("Claude banked reset service", () => {
         {
           creditId: "grant_weekly_1",
           kind: "weekly",
+          title: "One weekly limit reset",
           availableCount: 1,
           expiresAt: "2026-12-20T00:00:00Z",
         },

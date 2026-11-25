@@ -30,6 +30,7 @@ const KIND_ORDER: readonly ClaudeBankedResetKind[] = ["session", "weekly", "fabl
 
 const GrantSchema = z.object({
   id: z.string().regex(GRANT_ID),
+  label: z.string().nullable().optional(),
   resets_left: z.number().int().nonnegative(),
   ends_at: z.string().nullable().optional(),
   paused: z.boolean().optional(),
@@ -103,6 +104,7 @@ export function claudeBankedResetOptions(block: unknown, nowMs: number): ClaudeB
       {
         creditId: first.id,
         kind,
+        title: first.label?.trim() || null,
         availableCount: grants.reduce((sum, grant) => sum + grant.resets_left, 0),
         expiresAt: first.ends_at ?? null,
       },

@@ -133,6 +133,7 @@ function ClaudeResetOptionRow({
   const press = useCallback(() => onConsume(option.creditId), [onConsume, option.creditId]);
   return (
     <View style={OPTION_STYLE}>
+      {option.title === null ? null : <Text style={styles.prompt}>{option.title}</Text>}
       <Text style={styles.detail}>
         {kind.description}
         {option.availableCount > 1 ? ` ${option.availableCount} on hand.` : ""}
