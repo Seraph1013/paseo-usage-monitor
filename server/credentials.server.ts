@@ -169,6 +169,8 @@ export function describeCredentialPlace(source: UsageCredentialSource): string {
     }
     case "keychain":
       return `keychain "${source.service}"#${source.path}`;
+    case "literal":
+      return "built-in default";
   }
 }
 
@@ -293,6 +295,7 @@ function readSource(source: UsageCredentialSource, adapters: CredentialAdapters)
   if (source.kind === "jsonFile") return readJsonFileCredential(source, adapters);
   if (source.kind === "keychain") return readKeychainCredential(source, adapters);
   if (source.kind === "sqlite") return readSqliteCredential(source, adapters);
+  if (source.kind === "literal") return { kind: "resolved", token: source.value };
   const value = adapters.env[source.variable];
   if (value === undefined) return UNAVAILABLE;
   const token = value.trim();

@@ -173,6 +173,19 @@ const PRESET_DEFINITIONS: Record<string, UsageProvider> = {
           refreshedBy: "omp",
         },
       ],
+      // Measured live: without a `claude-cli/<version>` User-Agent the
+      // `cedar_ember` block answers `ineligible_reason: "surface"`, and with
+      // claude-cli/1.0.0 it answers "cli_version". So the version Claude Code
+      // last recorded is sent, with one known to pass when none is recorded.
+      claudeVersion: [
+        {
+          kind: "jsonFile",
+          file: "${CLAUDE_CONFIG_DIR}/.claude.json",
+          path: "lastReleaseNotesSeen",
+        },
+        { kind: "jsonFile", file: "~/.claude.json", path: "lastReleaseNotesSeen" },
+        { kind: "literal", value: "2.1.327" },
+      ],
     },
     source: {
       kind: "http",
@@ -182,6 +195,7 @@ const PRESET_DEFINITIONS: Record<string, UsageProvider> = {
         Authorization: "Bearer ${token}",
         Accept: "application/json",
         "anthropic-beta": "oauth-2025-04-20",
+        "User-Agent": "claude-cli/${claudeVersion} (external, cli)",
       },
     },
     readings: [

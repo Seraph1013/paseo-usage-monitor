@@ -146,6 +146,7 @@ function credentialRemedy(
   const chain = resolved.length > 0 ? resolved : Object.values(credentials).flat();
   let variable: string | null = null;
   for (const source of chain) {
+    if (source.kind === "literal") continue;
     if (source.kind === "env") {
       variable ??= source.variable;
       continue;

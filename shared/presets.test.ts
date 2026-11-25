@@ -318,6 +318,9 @@ describe("usage presets", () => {
 const REVIEWED_EXPIRY_PATHS: Record<string, string | null> = {
   "${CLAUDE_CONFIG_DIR}/.credentials.json claudeAiOauth.accessToken": "claudeAiOauth.expiresAt",
   "~/.claude/.credentials.json claudeAiOauth.accessToken": "claudeAiOauth.expiresAt",
+  // A version string Claude Code records, not a token: nothing to expire.
+  "${CLAUDE_CONFIG_DIR}/.claude.json lastReleaseNotesSeen": null,
+  "~/.claude.json lastReleaseNotesSeen": null,
   "${APPDATA}/opencode/auth.json anthropic.access": "anthropic.expires",
   "${APPDATA}/opencode/auth.json openai.access": "openai.expires",
   "${APPDATA}/opencode/auth.json openai.accountId": "openai.expires",

@@ -33,7 +33,7 @@ function createService(options: {
   const files = options.files ?? {
     [CREDENTIALS_PATH]: { claudeAiOauth: { accessToken: TOKEN } },
     [ACCOUNT_PATH]: {
-      lastReleaseNotesSeen: "2.1.327",
+      lastReleaseNotesSeen: "2.1.400",
       oauthAccount: { organizationUuid: ORGANIZATION },
     },
   };
@@ -156,7 +156,7 @@ describe("Claude banked reset service", () => {
           Authorization: `Bearer ${TOKEN}`,
           Accept: "application/json",
           "anthropic-beta": "oauth-2025-04-20",
-          "User-Agent": "claude-cli/2.1.327 (external, cli)",
+          "User-Agent": "claude-cli/2.1.400 (external, cli)",
         },
       },
     ]);
@@ -190,7 +190,7 @@ describe("Claude banked reset service", () => {
           Authorization: `Bearer ${TOKEN}`,
           Accept: "application/json",
           "anthropic-beta": "oauth-2025-04-20",
-          "User-Agent": "claude-cli/2.1.327 (external, cli)",
+          "User-Agent": "claude-cli/2.1.400 (external, cli)",
           "Content-Type": "application/json",
         },
         body: { program: "cedar_ember", grant_id: "grant_weekly_1", request_id: REQUEST_ID },
@@ -280,8 +280,8 @@ describe("Claude banked reset service", () => {
     expect(requests[0]?.url).toBe(
       "https://api.anthropic.com/api/organizations/org-work/reset_rate_limits",
     );
-    // No version recorded there, so none is claimed.
-    expect(requests[0]?.headers).not.toHaveProperty("User-Agent");
+    // No version recorded anywhere, so the preset's known-good one is sent.
+    expect(requests[0]?.headers["User-Agent"]).toBe("claude-cli/2.1.327 (external, cli)");
   });
 
   test("fails before any request when the account names no organization", async () => {

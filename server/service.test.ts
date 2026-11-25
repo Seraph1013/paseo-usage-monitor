@@ -1861,3 +1861,44 @@ describe("a vendor that says no inside a 200 response", () => {
     expect(provider.error).toBe("The provider reported an error in its response.");
   });
 });
+
+/**
+ * Claude only offers banked resets to a recent `claude-cli` User-Agent, so the
+ * preset's request carries the version Claude Code recorded, or a known-good
+ * one when nothing is recorded.
+ */
+describe("claude preset identifies itself as Claude Code", () => {
+  const claudeFiles = (account?: unknown) => ({
+    "/home/tester/.claude/.credentials.json": JSON.stringify({
+      claudeAiOauth: { accessToken: "claude-token-value" },
+    }),
+    ...(account === undefined ? {} : { "/home/tester/.claude.json": JSON.stringify(account) }),
+  });
+
+  test("sends the version Claude Code last recorded", async () => {
+    const source = createFakeSource({ http: async () => ({}) });
+    const service = createService({
+      source,
+      files: claudeFiles({ lastReleaseNotesSeen: "2.1.400" }),
+      overrides: { claude: { preset: "claude" } },
+    });
+    await service.read({ refresh: false });
+    const request = only(source.requests, "request");
+    expect(request.url).toBe("https://api.anthropic.com/api/oauth/usage?cedar_ember=1");
+    expect(request.headers["User-Agent"]).toBe("claude-cli/2.1.400 (external, cli)");
+  });
+
+  test("falls back to a known-good version rather than failing the card", async () => {
+    const source = createFakeSource({ http: async () => ({}) });
+    const service = createService({
+      source,
+      files: claudeFiles(),
+      overrides: { claude: { preset: "claude" } },
+    });
+    const provider = only((await service.read({ refresh: false })).providers, "provider");
+    expect(provider.status).toBe("ok");
+    expect(only(source.requests, "request").headers["User-Agent"]).toBe(
+      "claude-cli/2.1.327 (external, cli)",
+    );
+  });
+});

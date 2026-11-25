@@ -130,6 +130,8 @@ export interface ClaudeBankedResetServiceInput {
 
 interface ClaudeLogin {
   token: string;
+  /** The version the preset sends as Claude Code; the grants depend on it. */
+  version: string;
   /** Where Claude Code keeps `oauthAccount`, beside the login the token came from. */
   accountFile: string;
 }
@@ -155,6 +157,7 @@ function claudeLogin(resolver: UsageCredentialResolver, env: NodeJS.ProcessEnv):
       : (env.CLAUDE_CONFIG_DIR ?? "") !== "";
   return {
     token,
+    version: resolver.resolve("claudeVersion"),
     accountFile: fromConfigDir ? "${CLAUDE_CONFIG_DIR}/.claude.json" : "~/.claude.json",
   };
 }
@@ -195,13 +198,11 @@ export function createClaudeBankedResetService(
   }
 
   function headersFor(login: ClaudeLogin): Record<string, string> {
-    // Claude Code sends its own version; an unknown one is left out rather than guessed.
-    const version = accountValue(login.accountFile, "lastReleaseNotesSeen");
     return {
       Authorization: `Bearer ${login.token}`,
       Accept: "application/json",
       "anthropic-beta": "oauth-2025-04-20",
-      ...(version === null ? {} : { "User-Agent": `claude-cli/${version} (external, cli)` }),
+      "User-Agent": `claude-cli/${login.version} (external, cli)`,
     };
   }
 

@@ -83,11 +83,23 @@ export const UsageSqliteCredentialSchema = z.object({
   refreshedBy: z.string().min(1).optional(),
 });
 
+/**
+ * A fixed value that always resolves, as the last link of a chain whose
+ * earlier sources may be absent. Not a secret: Claude's endpoint only offers
+ * banked resets to a recent `claude-cli` User-Agent, so the version the
+ * installed CLI recorded is read first and this stands in when none is.
+ */
+export const UsageLiteralCredentialSchema = z.object({
+  kind: z.literal("literal"),
+  value: z.string().min(1),
+});
+
 export const UsageCredentialSourceSchema = z.discriminatedUnion("kind", [
   UsageEnvCredentialSchema,
   UsageJsonFileCredentialSchema,
   UsageKeychainCredentialSchema,
   UsageSqliteCredentialSchema,
+  UsageLiteralCredentialSchema,
 ]);
 
 /**
