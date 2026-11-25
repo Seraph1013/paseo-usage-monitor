@@ -44,7 +44,7 @@ import {
   type UsageSnapshot,
   type UsageWindow,
 } from "../shared/limits.shared";
-import { CodexBankedResetAction } from "./codex-reset.client";
+import { BankedResetAction } from "./banked-reset.client";
 import { UsageMeter, clampPercent } from "./meter.client";
 import { isDashboardVisible } from "../shared/pills.shared";
 import { UsageHistorySurface } from "./history.client";
@@ -1012,7 +1012,7 @@ function ProviderCard({
             display={display}
             columns={columns}
           />
-          <CodexBankedResetAction provider={provider} theme={theme} compact={compact} />
+          <BankedResetAction provider={provider} theme={theme} compact={compact} />
         </ScrollView>
         {compact ? null : (
           <>

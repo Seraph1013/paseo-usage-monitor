@@ -66,13 +66,19 @@ export function bankedResetReducer(
   }
 }
 
+/**
+ * Codex reports one `banked-resets` balance; Claude reports one per kind of
+ * grant (`banked-resets-weekly`, ...), so every reading of that family counts.
+ */
 export function bankedResetAvailableCount(provider: UsageProviderSnapshot): number {
-  if (provider.supportsBankedReset !== true) return 0;
-  const reading = provider.readings.find(
-    (candidate) => candidate.kind === "balance" && candidate.id === "banked-resets",
-  );
-  if (reading?.kind !== "balance" || reading.remaining === null || reading.remaining <= 0) return 0;
-  return Math.floor(reading.remaining);
+  if (provider.bankedReset === undefined) return 0;
+  let total = 0;
+  for (const reading of provider.readings) {
+    if (reading.kind !== "balance") continue;
+    if (reading.id !== "banked-resets" && !reading.id.startsWith("banked-resets-")) continue;
+    if (reading.remaining !== null && reading.remaining > 0) total += Math.floor(reading.remaining);
+  }
+  return total;
 }
 
 export function bankedResetOutcomeMessage(
@@ -93,7 +99,7 @@ export function bankedResetOutcomeMessage(
   }
 }
 
-interface BankedResetStyles {
+export interface BankedResetStyles {
   container: ViewStyle;
   prompt: TextStyle;
   detail: TextStyle;
@@ -106,7 +112,7 @@ interface BankedResetStyles {
   primaryButtonText: TextStyle;
 }
 
-function createStyles(theme: PluginTheme, compact: boolean): BankedResetStyles {
+export function createBankedResetStyles(theme: PluginTheme, compact: boolean): BankedResetStyles {
   const fontSize = compact ? 11 : 12;
   return {
     container: {
@@ -141,14 +147,14 @@ function createStyles(theme: PluginTheme, compact: boolean): BankedResetStyles {
   };
 }
 
-function expirationLabel(timestamp: string | null): string | null {
+export function expirationLabel(timestamp: string | null): string | null {
   if (timestamp === null) return null;
   const expiresAt = new Date(timestamp);
   if (Number.isNaN(expiresAt.getTime())) return null;
   return `Expires ${expiresAt.toLocaleString()}`;
 }
 
-function errorMessage(error: unknown): string {
+export function errorMessage(error: unknown): string {
   return error instanceof Error ? error.message : String(error);
 }
 
@@ -168,7 +174,7 @@ export function CodexBankedResetAction({
   const readSnapshot = useRpc(readUsageLimits);
   const queryClient = useQueryClient();
   const [state, dispatch] = useReducer(bankedResetReducer, BANKED_RESET_IDLE);
-  const styles = useMemo(() => createStyles(theme, compact), [compact, theme]);
+  const styles = useMemo(() => createBankedResetStyles(theme, compact), [compact, theme]);
   const availableCount = bankedResetAvailableCount(provider);
 
   const refreshSnapshot = useCallback(() => {

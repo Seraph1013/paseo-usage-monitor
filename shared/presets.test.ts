@@ -881,6 +881,42 @@ describe("verified presets resolve their recorded responses", () => {
     });
   });
 
+  /**
+   * `cedar_ember=1` adds the saved resets to the same response, shaped as T3
+   * Code and Claude Code read them. Only grants usable now are counted, one
+   * reading per kind, so a paused grant never offers a button.
+   */
+  test("claude counts usable banked resets per kind from the cedar_ember block", () => {
+    const document = {
+      ...(RESPONSE_FIXTURES["claude"] as object),
+      cedar_ember: {
+        eligible: true,
+        next_grant_id: "grant_weekly_1",
+        grants: [
+          { id: "grant_weekly_1", type: "weekly", resets_left: 1, usable_now: true },
+          { id: "grant_paused", type: "session", resets_left: 2, usable_now: false },
+        ],
+      },
+    };
+    const banked = project("claude", document).filter((reading) =>
+      reading.id.startsWith("banked-resets"),
+    );
+    expect(banked).toEqual([
+      {
+        kind: "balance",
+        id: "banked-resets-weekly",
+        label: "Banked resets · weekly",
+        group: null,
+        unit: "credits",
+        remaining: 1,
+        total: null,
+        percentRemaining: null,
+        currency: null,
+      },
+    ]);
+    expect(getUsagePreset("claude")?.bankedReset).toBe("claude");
+  });
+
   test("codex turns epoch-second reset_at into ISO and reads a string balance", () => {
     expect(readingById("codex", "session")).toMatchObject({
       percent: 42.5,

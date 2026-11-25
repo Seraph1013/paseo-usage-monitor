@@ -1,4 +1,5 @@
 import type { PluginHandlerContext } from "@getpaseo/plugin/server";
+import { createClaudeBankedResetService } from "./claude-reset.server";
 import { createCodexBankedResetService } from "./codex-reset.server";
 import { createNodeConfigAdapters, loadUsageConfig, usageConfigPath } from "./config.server";
 import {
@@ -10,6 +11,7 @@ import {
   writeUsageProviderEntry,
 } from "./config-store.server";
 import type { UsageConfigState, UsageProviderWrite } from "../shared/config.shared";
+import type { ClaudeBankedResetDetails } from "../shared/claude-reset.shared";
 import type { CodexBankedResetDetails } from "../shared/codex-reset.shared";
 import type { ClaudeStatusLineStatus } from "../shared/claude-hook.shared";
 import type { LimitAlert, LimitAlertSettings } from "../shared/limit-alerts.shared";
@@ -165,6 +167,28 @@ export function consumeCodexBankedReset(input: {
     source: sourceAdapters,
     credentials: credentialAdapters,
   }).consume(input);
+}
+
+function claudeBankedResetService() {
+  return createClaudeBankedResetService({
+    entries: buildProviderRegistry(loadUsageConfig(configAdapters)),
+    source: sourceAdapters,
+    credentials: credentialAdapters,
+  });
+}
+
+export function readClaudeBankedReset(input: {
+  providerId: string;
+}): Promise<ClaudeBankedResetDetails> {
+  return claudeBankedResetService().read(input.providerId);
+}
+
+export function consumeClaudeBankedReset(input: {
+  providerId: string;
+  creditId: string;
+  redeemRequestId: string;
+}) {
+  return claudeBankedResetService().consume(input);
 }
 
 export function readStatusLine(): Promise<ClaudeStatusLineStatus> {

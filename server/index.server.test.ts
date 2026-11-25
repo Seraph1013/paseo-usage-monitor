@@ -32,6 +32,8 @@ describe("index.server v0.8 entry point", () => {
       "usage.config.test-provider",
       "usage.codex.banked-reset.read",
       "usage.codex.banked-reset.consume",
+      "usage.claude.banked-reset.read",
+      "usage.claude.banked-reset.consume",
       "usage.claude-statusline.read",
       "usage.claude-statusline.install",
       "usage.claude-statusline.uninstall",

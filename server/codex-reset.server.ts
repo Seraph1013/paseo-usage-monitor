@@ -86,7 +86,7 @@ export function createCodexBankedResetService(
     if (!entry?.provider) {
       throw new UsageConfigError(`Usage provider "${providerId}" is not configured`);
     }
-    if (!entry.provider.supportsBankedReset) {
+    if (entry.provider.bankedReset !== "codex") {
       throw new UsageConfigError(`Usage provider "${providerId}" does not support banked resets`);
     }
     const resolver = createCredentialResolver(entry.provider.credentials, input.credentials);

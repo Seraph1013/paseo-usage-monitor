@@ -115,6 +115,7 @@ const PRESET_DEFINITIONS: Record<string, UsageProvider> = {
     // is a second caller on the same budget. Thirty minutes clears that window
     // for both callers and still resolves a 5-hour bucket.
     refreshIntervalMs: 1_800_000,
+    bankedReset: "claude",
     credentials: {
       token: [
         // Claude Code on macOS keeps the pair in the Keychain and writes the
@@ -175,7 +176,7 @@ const PRESET_DEFINITIONS: Record<string, UsageProvider> = {
     },
     source: {
       kind: "http",
-      url: "https://api.anthropic.com/api/oauth/usage",
+      url: "https://api.anthropic.com/api/oauth/usage?cedar_ember=1",
       method: "GET",
       headers: {
         Authorization: "Bearer ${token}",
@@ -261,6 +262,24 @@ const PRESET_DEFINITIONS: Record<string, UsageProvider> = {
         // no cap exists, which beside a non-zero amount would say the opposite
         // of the truth. So this reading reports the amount spent and no more.
       },
+      {
+        kind: "balance",
+        id: "banked-resets",
+        label: "Banked resets",
+        unit: "credits",
+        // `cedar_ember=1` adds the saved resets Claude Code offers as
+        // `/usage` grants, so the count rides the request this preset already
+        // makes instead of a second call against the same 429 budget. One
+        // reading per kind of grant; the card sums them, and redeeming reads
+        // the grants again for their ids, kinds and expiry.
+        each: {
+          path: "cedar_ember.grants",
+          idPath: "type",
+          labelPath: "type",
+          where: { path: "usable_now", equals: true },
+        },
+        remainingPath: "resets_left",
+      },
     ],
   }),
 
@@ -326,7 +345,7 @@ const PRESET_DEFINITIONS: Record<string, UsageProvider> = {
     icon: { kind: "monogram", text: "Cx", color: "#10B981" },
     description:
       "Codex session, weekly, code-review and reserve limits, plus banked resets and any prepaid credit balance",
-    supportsBankedReset: true,
+    bankedReset: "codex",
     credentials: {
       // No expiresAtPath: auth.json records `auth_mode`, `last_refresh` and the
       // tokens object, and nothing else. `last_refresh` is when the CLI last

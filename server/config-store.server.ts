@@ -124,7 +124,7 @@ export function listUsagePresetSummaries(): UsagePresetSummary[] {
       throw new UsageConfigError(`Built-in usage preset "${id}" is unavailable`);
     }
     const editableCredentials = Object.entries(preset.credentials).filter(
-      ([name]) => !(preset.supportsBankedReset && name === "accountId"),
+      ([name]) => !(preset.bankedReset === "codex" && name === "accountId"),
     );
     const credentialNames = editableCredentials.map(([name]) => name);
     const credentialHints = editableCredentials.flatMap(([, sources]) =>

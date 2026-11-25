@@ -48,7 +48,7 @@ import {
   type UsageProviderSnapshot,
   type UsageWindow,
 } from "../shared/limits.shared";
-import { CodexBankedResetAction } from "./codex-reset.client";
+import { BankedResetAction } from "./banked-reset.client";
 import { clampPercent, UsageMeter, usageTone } from "./meter.client";
 import {
   composerPillId,
@@ -419,7 +419,7 @@ function PillCard({
       {resets === null ? null : <Text style={styles.cardDetail}>{resets}</Text>}
       {provider.notice === null ? null : <Text style={styles.cardDetail}>{provider.notice}</Text>}
       {provider.error === null ? null : <Text style={styles.cardDetail}>{provider.error}</Text>}
-      <CodexBankedResetAction provider={provider} theme={theme} compact />
+      <BankedResetAction provider={provider} theme={theme} compact />
       {provider.authRefreshCommand === null ? null : terminalRefresh.status === "idle" ? (
         <Pressable
           accessibilityLabel={`Refresh ${provider.label} credentials by running ${provider.authRefreshCommand}`}

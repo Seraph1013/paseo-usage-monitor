@@ -3,6 +3,7 @@ import {
   cancelLimitAlertResume as cancelLimitAlertResumeHandler,
   closeLimitAlerts,
   closeLiveFileWatcher,
+  consumeClaudeBankedReset as consumeClaudeBankedResetHandler,
   consumeCodexBankedReset as consumeCodexBankedResetHandler,
   dismissLimitAlert as dismissLimitAlertHandler,
   handOffLimitAlert as handOffLimitAlertHandler,
@@ -11,6 +12,7 @@ import {
   readHistory,
   readLimitAlertSettings as readLimitAlertSettingsHandler,
   readLimitAlerts as readLimitAlertsHandler,
+  readClaudeBankedReset as readClaudeBankedResetHandler,
   readCodexBankedReset as readCodexBankedResetHandler,
   readLimits,
   readStatusLine,
@@ -22,6 +24,7 @@ import {
   writeLimitAlertSettings as writeLimitAlertSettingsHandler,
   writeProvider,
 } from "./server/handlers.server";
+import { consumeClaudeBankedReset, readClaudeBankedReset } from "./shared/claude-reset.shared";
 import { consumeCodexBankedReset, readCodexBankedReset } from "./shared/codex-reset.shared";
 import {
   cancelLimitAlertResume,
@@ -57,6 +60,8 @@ export default function contribute(server: PluginServerContext) {
   server.handle(testUsageProvider, testProvider);
   server.handle(readCodexBankedReset, readCodexBankedResetHandler);
   server.handle(consumeCodexBankedReset, consumeCodexBankedResetHandler);
+  server.handle(readClaudeBankedReset, readClaudeBankedResetHandler);
+  server.handle(consumeClaudeBankedReset, consumeClaudeBankedResetHandler);
   server.handle(readClaudeStatusLine, readStatusLine);
   server.handle(installClaudeStatusLine, installStatusLine);
   server.handle(uninstallClaudeStatusLine, uninstallStatusLine);

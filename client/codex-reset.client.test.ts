@@ -21,13 +21,14 @@ const DETAILS: CodexBankedResetDetails = {
 };
 
 function provider(supportsBankedReset: boolean, remaining: number): UsageProviderSnapshot {
+  const bankedReset = supportsBankedReset ? ({ bankedReset: "codex" } as const) : {};
   return {
     providerId: "codex",
     label: "Codex",
     description: null,
     unverified: false,
     live: false,
-    supportsBankedReset,
+    ...bankedReset,
     status: "ok",
     readings: [
       {

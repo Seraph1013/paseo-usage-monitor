@@ -251,7 +251,7 @@ function baseSnapshot(id: string, provider: UsageProvider): UsageProviderSnapsho
     description: provider.description ?? null,
     unverified: provider.unverified,
     live: provider.source?.kind === "file",
-    ...(provider.supportsBankedReset ? { supportsBankedReset: true } : {}),
+    ...(provider.bankedReset === undefined ? {} : { bankedReset: provider.bankedReset }),
     status: "ok",
     readings: [],
     error: null,

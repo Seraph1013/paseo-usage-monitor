@@ -426,13 +426,20 @@ export const UsageDisplaySchema = z.object({
   pill: UsagePillDisplaySchema.optional(),
 });
 
+/** Vendors whose saved rate-limit resets the plugin can spend. */
+export const BankedResetVendorSchema = z.enum(["codex", "claude"]);
+export type BankedResetVendor = z.infer<typeof BankedResetVendorSchema>;
+
 export const UsageProviderSchema = z.object({
   label: z.string().min(1),
   description: z.string().min(1).optional(),
   /** Marks a preset whose endpoint no vendor has published. */
   unverified: z.boolean().default(false),
-  /** Built-in Codex capability. Direct provider config cannot enable vendor mutations. */
-  supportsBankedReset: z.boolean().default(false),
+  /**
+   * Which vendor's banked-reset routes this built-in preset can redeem against.
+   * Direct provider config cannot enable vendor mutations.
+   */
+  bankedReset: BankedResetVendorSchema.optional(),
   /** The mark shown on the card, unless `display.icon` overrides it. */
   icon: UsageIconSchema.optional(),
   enabled: z.boolean().default(true),
@@ -563,8 +570,8 @@ export const UsageProviderSnapshotSchema = z.object({
    * surface polls such a provider faster for the same reason.
    */
   live: z.boolean(),
-  /** True only for the built-in Codex preset, never inferred from a reading id. */
-  supportsBankedReset: z.boolean().optional(),
+  /** Set only by a built-in preset, never inferred from a reading id. */
+  bankedReset: BankedResetVendorSchema.optional(),
   status: UsageProviderStatusSchema,
   readings: z.array(UsageReadingSchema),
   error: z.string().nullable(),
